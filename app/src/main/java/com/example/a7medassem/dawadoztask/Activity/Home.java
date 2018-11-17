@@ -25,6 +25,7 @@ public class Home extends AppCompatActivity {
     private static List<weatherModel> list = new ArrayList<>();
     private RecyclerView recyclerView;
     private static weatherAdapter mAdapter;
+    public static List<String> id = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

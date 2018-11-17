@@ -63,7 +63,7 @@ public class getCitiesTemp {
             for(int i=0;i<5;i++)
             {
                 JSONObject cities = arrList.getJSONObject(i);
-                id.add(cities.getString("id"));
+                Home.id.add(cities.getString("id"));
                 String name = cities.getString("name");
                 JSONObject main = cities.getJSONObject("main");
                 String temp = main.getString("temp");
