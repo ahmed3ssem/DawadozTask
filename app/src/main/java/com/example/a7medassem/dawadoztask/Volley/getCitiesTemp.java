@@ -67,7 +67,8 @@ public class getCitiesTemp {
                 String name = cities.getString("name");
                 JSONObject main = cities.getJSONObject("main");
                 String temp = main.getString("temp");
-                Home.showData(name,temp);
+                String pressure = main.getString("pressure");
+                Home.showData(name,temp,pressure);
             }
         } catch (JSONException e) {
             e.printStackTrace();

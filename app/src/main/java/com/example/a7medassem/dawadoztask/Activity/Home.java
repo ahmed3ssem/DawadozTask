@@ -1,5 +1,6 @@
 package com.example.a7medassem.dawadoztask.Activity;
 
+import com.example.a7medassem.dawadoztask.Volley.getCityFiveTemp;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
@@ -10,13 +11,13 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-
+import android.view.View;
 import com.example.a7medassem.dawadoztask.Adapter.weatherAdapter;
 import com.example.a7medassem.dawadoztask.Model.weatherModel;
 import com.example.a7medassem.dawadoztask.R;
 import com.example.a7medassem.dawadoztask.RecycleView.DividerItemDecoration;
+import com.example.a7medassem.dawadoztask.RecycleView.RecyclerItemClickListener;
 import com.example.a7medassem.dawadoztask.Volley.getCitiesTemp;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +36,10 @@ public class Home extends AppCompatActivity {
         initializeList();
 
         getDataFromServer();
+
+        getCityTemps();
+
+
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -76,10 +81,29 @@ public class Home extends AppCompatActivity {
     }
 
     /* add data to list */
-    public static void showData(String name , String temp)
+    public static void showData(String name , String temp , String prsssure)
     {
-        weatherModel model = new weatherModel("City Name: "+name,"City Temp: "+temp);
+        weatherModel model = new weatherModel("City Name: "+name,"City Temp: "+temp , "Pressure: "+prsssure  );
         list.add(model);
         mAdapter.notifyDataSetChanged();
+
+    }
+
+    private void getCityTemps()
+    {
+        recyclerView.addOnItemTouchListener(
+                new RecyclerItemClickListener(this, recyclerView, new RecyclerItemClickListener.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(View view, int position) {
+                        // do whatever
+                        getCityFiveTemp temp = new getCityFiveTemp(Home.this);
+                        temp.gettemps(id.get(position));
+                    }
+
+                    @Override
+                    public void onLongItemClick(View view, int position) {
+                        // do whatever
+                    }
+                }));
     }
 }

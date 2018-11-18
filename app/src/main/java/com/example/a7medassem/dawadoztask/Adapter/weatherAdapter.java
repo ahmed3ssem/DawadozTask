@@ -14,12 +14,13 @@ public class weatherAdapter extends RecyclerView.Adapter<weatherAdapter.MyViewHo
     private List<weatherModel> list;
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        public TextView name, temp;
+        public TextView name, temp , pressure;
 
         public MyViewHolder(View view) {
             super(view);
             name =  view.findViewById(R.id.name);
             temp =  view.findViewById(R.id.temp);
+            pressure = view.findViewById(R.id.pressure);
         }
     }
 
@@ -41,6 +42,7 @@ public class weatherAdapter extends RecyclerView.Adapter<weatherAdapter.MyViewHo
         weatherModel model = list.get(position);
         holder.name.setText(model.getName());
         holder.temp.setText(model.getTemp());
+        holder.pressure.setText(model.getPressure());
     }
 
     @Override
