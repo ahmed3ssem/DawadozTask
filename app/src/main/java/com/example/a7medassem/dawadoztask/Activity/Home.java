@@ -1,7 +1,7 @@
 package com.example.a7medassem.dawadoztask.Activity;
 
-import com.example.a7medassem.dawadoztask.Volley.getCityFiveTemp;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -12,21 +12,25 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 import com.example.a7medassem.dawadoztask.Adapter.weatherAdapter;
 import com.example.a7medassem.dawadoztask.Model.weatherModel;
 import com.example.a7medassem.dawadoztask.R;
 import com.example.a7medassem.dawadoztask.RecycleView.DividerItemDecoration;
 import com.example.a7medassem.dawadoztask.RecycleView.RecyclerItemClickListener;
 import com.example.a7medassem.dawadoztask.Volley.getCitiesTemp;
+import com.example.a7medassem.dawadoztask.connectionChecker.internetChecker;
+import com.example.a7medassem.dawadoztask.SQL.weatherDB;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Home extends AppCompatActivity {
 
     private static List<weatherModel> list = new ArrayList<>();
-    private RecyclerView recyclerView;
+    private static RecyclerView recyclerView;
     private static weatherAdapter mAdapter;
     public static List<String> id = new ArrayList<>();
+    private internetChecker checker = new internetChecker(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,10 +39,9 @@ public class Home extends AppCompatActivity {
 
         initializeList();
 
-        getDataFromServer();
+        checkConnection();
 
         getCityTemps();
-
 
     }
 
@@ -61,6 +64,37 @@ public class Home extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    //Check if app installed before or not
+    private boolean isFirstTime()
+    {
+        SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+        boolean ranBefore = preferences.getBoolean("RanBefore", false);
+        if (!ranBefore) {
+            // first time
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putBoolean("RanBefore", true);
+            editor.commit();
+        }
+        return !ranBefore;
+}
+
+    /* check if there is connection or not to get data from sqlite */
+    private void checkConnection()
+    {
+        if (checker.isInternetOn())
+        {
+            getDataFromServer();
+        }
+        else if(isFirstTime())
+        {
+            Toast.makeText(Home.this,"In your first Time , Please open your connection",Toast.LENGTH_LONG).show();
+        }
+        else  {
+            weatherDB.creatTable(this);
+            weatherDB.showCities();
+        }
+    }
+
     /* initialize recyclerview */
     private void initializeList()
     {
@@ -71,6 +105,7 @@ public class Home extends AppCompatActivity {
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL_LIST));
         recyclerView.setAdapter(mAdapter);
+        list.clear();
     }
 
     /* get data from class getCitiesTemp that get cities name and temps from server */
@@ -86,7 +121,6 @@ public class Home extends AppCompatActivity {
         weatherModel model = new weatherModel("City Name: "+name,"City Temp: "+temp , "Pressure: "+prsssure  );
         list.add(model);
         mAdapter.notifyDataSetChanged();
-
     }
 
     private void getCityTemps()
@@ -96,8 +130,13 @@ public class Home extends AppCompatActivity {
                     @Override
                     public void onItemClick(View view, int position) {
                         // do whatever
-                        getCityFiveTemp temp = new getCityFiveTemp(Home.this);
-                        temp.gettemps(id.get(position));
+                            weatherModel model = list.get(position);
+                            String cityName = model.getName();
+                            String cityId = id.get(position);
+                            Intent intent = new Intent(Home.this,citytempratures.class);
+                            intent.putExtra("cityName",cityName);
+                            intent.putExtra("cityId",cityId);
+                            startActivity(intent);
                     }
 
                     @Override

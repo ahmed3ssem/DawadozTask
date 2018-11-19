@@ -51,6 +51,7 @@ public class citytempratures extends AppCompatActivity {
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL_LIST));
         recyclerView.setAdapter(mAdapter);
+        list.clear();
     }
 
     /* get data from class getCitiesTemp that get cities name and temps from server */

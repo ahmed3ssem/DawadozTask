@@ -9,6 +9,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.a7medassem.dawadoztask.Activity.Home;
+import com.example.a7medassem.dawadoztask.SQL.weatherDB;
+import com.example.a7medassem.dawadoztask.connectionChecker.internetChecker;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -57,6 +59,11 @@ public class getCitiesTemp {
 
     private void extractData(String response)
     {
+        internetChecker checker = new internetChecker(context);
+        if(checker.isInternetOn())
+        {
+            deleteDB();
+        }
         try {
             JSONObject mainobj = new JSONObject(response);
             JSONArray arrList = mainobj.getJSONArray("list");
@@ -64,14 +71,31 @@ public class getCitiesTemp {
             {
                 JSONObject cities = arrList.getJSONObject(i);
                 Home.id.add(cities.getString("id"));
+                int cityId= Integer.parseInt(cities.getString("id"));
                 String name = cities.getString("name");
                 JSONObject main = cities.getJSONObject("main");
                 String temp = main.getString("temp");
                 String pressure = main.getString("pressure");
+                addToSQL(name,temp,pressure,cityId);
                 Home.showData(name,temp,pressure);
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    private void deleteDB()
+    {
+        boolean dbexsist = weatherDB.doesDatabaseExist(context,"taskDB");
+        if(dbexsist==true)
+        {
+            weatherDB.deletBD(context);
+        }
+    }
+
+    private void addToSQL(String name , String temp , String prsssure,int id)
+    {
+        weatherDB.creatTable(context);
+        weatherDB.insertDataToCities(name,temp,prsssure,id);
     }
 }
